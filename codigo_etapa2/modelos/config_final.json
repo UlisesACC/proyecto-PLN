@@ -1,0 +1,28 @@
+{
+  "experiment_id": "C080",
+  "config": {
+    "pasos": "contracciones",
+    "negacion": "conservar",
+    "representacion": "frecuencia",
+    "ngramas": [
+      1,
+      1
+    ],
+    "svd": null,
+    "recursos": [
+      "huliu",
+      "sentiwordnet"
+    ],
+    "balanceo": null,
+    "hiper": {},
+    "modelo": "LogisticRegression"
+  },
+  "descripcion": {
+    "normalizacion": "tok + contracciones",
+    "representacion": "frecuencia unigramas",
+    "mejora_linguistica": "léxico Hu&Liu + SentiWordNet",
+    "desbalance": "ninguno",
+    "hiperparametros": "C=1.0"
+  },
+  "entrenado_con": "train+dev"
+}

@@ -1,0 +1,42 @@
+===== DEV | C035 | MultinomialNB
+              precision    recall  f1-score   support
+
+    negative     0.4762    0.7692    0.5882        13
+    positive     0.9565    0.8571    0.9041        77
+
+    accuracy                         0.8444        90
+   macro avg     0.7164    0.8132    0.7462        90
+weighted avg     0.8871    0.8444    0.8585        90
+
+
+===== DEV | C080 | LogisticRegression
+              precision    recall  f1-score   support
+
+    negative     0.8750    0.5385    0.6667        13
+    positive     0.9268    0.9870    0.9560        77
+
+    accuracy                         0.9222        90
+   macro avg     0.9009    0.7627    0.8113        90
+weighted avg     0.9193    0.9222    0.9142        90
+
+
+===== DEV | C125 | LinearSVC
+              precision    recall  f1-score   support
+
+    negative     0.8750    0.5385    0.6667        13
+    positive     0.9268    0.9870    0.9560        77
+
+    accuracy                         0.9222        90
+   macro avg     0.9009    0.7627    0.8113        90
+weighted avg     0.9193    0.9222    0.9142        90
+
+
+===== TEST | configuración C080 congelada | LogisticRegression reentrenado con train+dev
+              precision    recall  f1-score   support
+
+    negative     0.7500    0.4286    0.5455        14
+    positive     0.9024    0.9737    0.9367        76
+
+    accuracy                         0.8889        90
+   macro avg     0.8262    0.7011    0.7411        90
+weighted avg     0.8787    0.8889    0.8758        90

@@ -1,0 +1,10 @@
+python=3.13.18
+scikit-learn=1.9.1
+imbalanced-learn=0.14.2
+pyspellchecker=0.9.1
+nltk=3.10.4
+pandas=3.0.5
+numpy=2.5.3
+random_state=0 (particiones, LR, LinearSVC, SVD, oversampling, undersampling, SMOTE)
+particion=70/15/15 estratificada, shuffle=True
+experimentos=132

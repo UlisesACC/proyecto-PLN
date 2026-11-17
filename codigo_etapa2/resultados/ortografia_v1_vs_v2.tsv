@@ -1,0 +1,5 @@
+modelo	experimento	macro_f1_v1_sin_proteccion	macro_f1_v2_con_proteccion	nota
+MultinomialNB	ortografía sola	0.5353	0.5353	sin cambio
+LogisticRegression	ortografía sola	0.6427	0.6427	sin cambio
+LinearSVC	ortografía sola	0.7574	0.7035	la mejora de v1 venía de sobrecorrecciones (p. ej. wingull -> lingual en una reseña spam)
+LinearSVC	contracciones + ortografía	0.8113	no se probó (ortografía ya no aportaba sola)	en v1 era la mejor combinación

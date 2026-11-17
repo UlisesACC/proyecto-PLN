@@ -1,0 +1,22 @@
+model	paso	experiment_id	cambio_aceptado	normalizacion	representacion	mejora_linguistica	desbalance	hiperparametros	accuracy	macro_f1	f1_negative
+MultinomialNB	línea base	C001	línea base: solo tokenización	tokenización	frecuencia unigramas	ninguna	ninguno	alpha=1.0	0.8667	0.5353	0.1429
+MultinomialNB	E1 mejor paso individual	C006	+ lematizacion (solo)	tok + lematización	frecuencia unigramas	ninguna	ninguno	alpha=1.0	0.8778	0.6	0.2667
+MultinomialNB	E2 combinación	C013	+ limpieza + contracciones + repeticiones + ortografia + lematizacion + stopwords	tok + limpieza + contracciones + repeticiones + ortografía + lematización + stopwords	frecuencia unigramas	ninguna	ninguno	alpha=1.0	0.8444	0.6375	0.3636
+MultinomialNB	E3 desbalance	C013	+ limpieza + contracciones + repeticiones + ortografia + lematizacion + stopwords	tok + limpieza + contracciones + repeticiones + ortografía + lematización + stopwords	frecuencia unigramas	ninguna	ninguno	alpha=1.0	0.8444	0.6375	0.3636
+MultinomialNB	E4 representación	C026	tfidf (1, 2) + class_weight (control)	tok + limpieza + contracciones + repeticiones + ortografía + lematización + stopwords	tfidf uni+bigramas	ninguna	class_weight	alpha=1.0	0.7667	0.6684	0.4878
+MultinomialNB	E5-E6 mejoras	C027	+ negación marcada (NEG_)	tok + limpieza + contracciones + repeticiones + ortografía + lematización + stopwords	tfidf uni+bigramas	negación marcada (NEG_)	class_weight	alpha=1.0	0.8333	0.734	0.5714
+MultinomialNB	E7 hiperparámetros	C035	GridSearch alpha=0.5	tok + limpieza + contracciones + repeticiones + ortografía + lematización + stopwords	tfidf uni+bigramas	negación marcada (NEG_)	class_weight	alpha=0.5	0.8444	0.7462	0.5882
+LogisticRegression	línea base	C038	línea base: solo tokenización	tokenización	frecuencia unigramas	ninguna	ninguno	C=1.0	0.8778	0.6427	0.3529
+LogisticRegression	E1 mejor paso individual	C040	+ contracciones (solo)	tok + contracciones	frecuencia unigramas	ninguna	ninguno	C=1.0	0.9111	0.775	0.6
+LogisticRegression	E2 combinación	C040	+ contracciones (solo)	tok + contracciones	frecuencia unigramas	ninguna	ninguno	C=1.0	0.9111	0.775	0.6
+LogisticRegression	E3 desbalance	C040	+ contracciones (solo)	tok + contracciones	frecuencia unigramas	ninguna	ninguno	C=1.0	0.9111	0.775	0.6
+LogisticRegression	E4 representación	C040	+ contracciones (solo)	tok + contracciones	frecuencia unigramas	ninguna	ninguno	C=1.0	0.9111	0.775	0.6
+LogisticRegression	E5-E6 mejoras	C080	+ léxico Hu&Liu + SentiWordNet	tok + contracciones	frecuencia unigramas	léxico Hu&Liu + SentiWordNet	ninguno	C=1.0	0.9222	0.8113	0.6667
+LogisticRegression	E7 hiperparámetros	C080	+ léxico Hu&Liu + SentiWordNet	tok + contracciones	frecuencia unigramas	léxico Hu&Liu + SentiWordNet	ninguno	C=1.0	0.9222	0.8113	0.6667
+LinearSVC	línea base	C086	línea base: solo tokenización	tokenización	frecuencia unigramas	ninguna	ninguno	C=1.0	0.8778	0.7035	0.4762
+LinearSVC	E1 mejor paso individual	C088	+ contracciones (solo)	tok + contracciones	frecuencia unigramas	ninguna	ninguno	C=1.0	0.9111	0.775	0.6
+LinearSVC	E2 combinación	C094	+ contracciones + stopwords	tok + contracciones + stopwords	frecuencia unigramas	ninguna	ninguno	C=1.0	0.9	0.791	0.64
+LinearSVC	E3 desbalance	C094	+ contracciones + stopwords	tok + contracciones + stopwords	frecuencia unigramas	ninguna	ninguno	C=1.0	0.9	0.791	0.64
+LinearSVC	E4 representación	C094	+ contracciones + stopwords	tok + contracciones + stopwords	frecuencia unigramas	ninguna	ninguno	C=1.0	0.9	0.791	0.64
+LinearSVC	E5-E6 mejoras	C125	+ SentiWordNet	tok + contracciones + stopwords	frecuencia unigramas	SentiWordNet	ninguno	C=1.0	0.9222	0.8113	0.6667
+LinearSVC	E7 hiperparámetros	C125	+ SentiWordNet	tok + contracciones + stopwords	frecuencia unigramas	SentiWordNet	ninguno	C=1.0	0.9222	0.8113	0.6667

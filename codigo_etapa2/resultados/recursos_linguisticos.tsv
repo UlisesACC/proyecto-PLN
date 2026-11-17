@@ -1,0 +1,4 @@
+clase	reseñas	% cubiertas Hu&Liu	prom. positivo Hu&Liu	prom. negativo Hu&Liu	% cubiertas SentiWordNet	prom. positivo SentiWordNet	prom. negativo SentiWordNet	% cubiertas emojis	prom. positivo emojis	prom. negativo emojis	% con negador
+negative	64	82.8	1.906	3.0	98.4	2.014	2.192	1.6	0.0	0.016	62.5
+positive	356	89.6	2.334	1.045	99.2	1.697	1.283	4.2	0.048	0.008	31.5
+todas	420	88.6	2.269	1.343	99.0	1.746	1.422	3.8	0.041	0.009	36.2
