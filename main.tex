@@ -9,12 +9,27 @@
 \setlength{\parskip}{0.55em}
 \renewcommand{\figurename}{Figura}
 \begin{document}
-{\small Instituto Politécnico Nacional $\cdot$ Escuela Superior de Cómputo\\Procesamiento de Lenguaje Natural $\cdot$ Noviembre de 2026}
-\section*{Clasificación de sentimiento en reseñas de Steam}
-\textbf{Proyecto de recuperación de opiniones, etapa II}\\
-García Valiente Ángel René, Cabello Cárdenas Ulises Abdiel y Mexica Contreras Yaretzi
-
+\begin{titlepage}
+\centering
+{\Large Instituto Politécnico Nacional\par}
+{\large Escuela Superior de Cómputo\par}
+\vspace{2cm}
+{\large Procesamiento de Lenguaje Natural\par}
+\vspace{1.6cm}
+{\Huge\bfseries Clasificación de sentimiento en reseñas de Steam\par}
+\vspace{.7cm}
+{\Large Etapa II del proyecto de recuperación de opiniones\par}
+\vfill
+{\large García Valiente Ángel René\\Cabello Cárdenas Ulises Abdiel\\Mexica Contreras Yaretzi\\Flores Bustos Karen\par}
+\vspace{1.4cm}
+17 de noviembre de 2026
+\end{titlepage}
+\enlargethispage{3\baselineskip}
 \textbf{Resumen.} ¿Permiten las palabras de una reseña predecir si su autor recomienda el juego? Se compararon 132 configuraciones sobre 600 reseñas de Steam. En desarrollo, la regresión logística y el clasificador de margen lineal alcanzaron el mismo macro-F1 (0.8113). La configuración seleccionada combinó frecuencias de palabras con cuatro rasgos de polaridad. En prueba acertó 80 de 90 votos y recuperó seis de las catorce recomendaciones negativas.
+\section*{Introducción}
+En un buscador de opiniones, una consulta como \textit{cheaters} recupera reseñas que hablan de trampas. La relevancia temática por sí sola deja abierta otra pregunta: ¿el autor recomienda el juego a pesar de ese problema? El objetivo de esta etapa fue incorporar esa segunda dimensión al sistema de recuperación. Para ello se aprendió una correspondencia entre el texto de la reseña y el voto que registró su autor en Steam.
+
+El problema exige distinguir una opinión sobre un aspecto particular de la valoración del juego en su conjunto. Un usuario puede elogiar la música, criticar el diseño y desaconsejar la compra en una misma reseña. Se compararon tres clasificadores tradicionales para determinar qué transformaciones del texto conservan información útil para esa decisión y cómo cambian los errores sobre la clase menos frecuente.
 \section{Corpus, etiquetas y particiones}
 Se reutilizó el corpus congelado de la etapa I, con 100 reseñas en inglés por cada uno de seis videojuegos. La unidad de análisis es la reseña. Su identificador se conserva como \texttt{document\_id} y su texto original como \texttt{text}. Steam registra una recomendación binaria en \texttt{voted\_up}. El valor verdadero se tradujo a \textit{positive} y el falso a \textit{negative}. El corpus contiene 600 textos e identificadores distintos. La auditoría registró cero calificaciones vacías, etiquetas fuera de los dos valores admitidos y reseñas vacías. El predictor recibe exclusivamente el texto. La calificación y el juego quedan como metadatos.
 
@@ -27,7 +42,7 @@ Corpus &91&509&600&15.17\\\bottomrule\end{tabular}\end{center}
 
 Se barajaron las reseñas con semilla 0 y se estratificó por etiqueta para mantener representada la clase minoritaria en las tres particiones. El vocabulario, los pesos y las transformaciones que requieren ajuste se estimaron con entrenamiento durante la selección. Se reservó desarrollo para comparar opciones. Tras congelar C080 se reajustó con las 510 reseñas de entrenamiento y desarrollo y se evaluó la configuración final una vez en prueba.
 
-La recomendación resume una decisión del usuario que puede diferir del tono de una frase. Por ejemplo, la reseña 238204926 combina «I hate this game» con la admisión de que juega a diario. La revisión manual documentó la ambigüedad y conservó el voto positivo original. Cambiarlo por intuición habría modificado la tarea supervisada.
+La recomendación resume una decisión del usuario que puede diferir del tono de una frase. Por ejemplo, la reseña 238204926 combina «I hate this game» con la admisión de que juega a diario. La revisión manual documentó la ambigüedad y conservó el voto positivo original. Se revisaron diez casos de entrenamiento seleccionados por desacuerdo entre la polaridad léxica y el voto. Cinco se consideraron coherentes y cinco ambiguos o dudosos. Se conservaron las etiquetas de la fuente. Al centrarse en discrepancias, esta revisión ilustra tipos de ambigüedad, pero su proporción no estima la frecuencia de etiquetas dudosas en todo el corpus.
 
 
 \newpage
@@ -44,6 +59,32 @@ Por ejemplo, en C080 las contracciones hacen explícita la negación. La rama de
 \item \textbf{E5 y E6.} Se fija una referencia sin aumento lingüístico para cada familia. Se ensayan los recursos por separado y se combinan los dos mejor situados. El cuadro de la página siguiente permite distinguir los aportes individuales de las interacciones.
 \item \textbf{E7.} \texttt{Registro.rejilla} ejecuta \texttt{GridSearchCV} con \texttt{PredefinedSplit}: entrenamiento para estimar parámetros y desarrollo para puntuar. Se prueban $\alpha\in\{0.01,0.1,0.5,1,2\}$ en Naive Bayes y $C\in\{0.01,0.1,1,10,100\}$ en los clasificadores lineales. Se trata de una búsqueda por etapas: el resultado depende también de qué variantes sobrevivieron a cada comparación.
 \end{enumerate}
+
+\newpage
+\section{Efectos de la normalización y la representación}
+\subsection*{De las palabras originales a los rasgos}
+La tokenización separa una reseña en unidades que el modelo puede contar. La limpieza reduce diferencias superficiales y la lematización reúne formas flexionadas. Sin embargo, dos expresiones que se vuelven idénticas después de normalizar pueden tener funciones distintas: repetir una letra suele comunicar intensidad, y una palabra poco frecuente puede ser el nombre de un personaje. Por esa razón se midió cada operación manteniendo fijos los unigramas de frecuencia, los parámetros iniciales y las particiones.
+
+\begin{center}\small
+\begin{tabular}{lrrr}\toprule
+Operación añadida a la tokenización & Naive Bayes & Reg. logística & LinearSVC\\\midrule
+Ninguna & .535 & .643 & .704\\
+Limpieza & .588 & .657 & .741\\
+Contracciones & .535 & .775 & .775\\
+Repeticiones & .535 & .643 & .757\\
+Ortografía & .535 & .643 & .704\\
+Lematización & .600 & .676 & .741\\
+Filtrado de palabras vacías & .535 & .753 & .745\\\bottomrule
+\end{tabular}\\{\small Macro-F1 en desarrollo. Cada fila corresponde a un ensayo individual.}
+\end{center}
+
+Expandir contracciones reunió realizaciones de la negación que, tratadas como tokens distintos, dispersaban la evidencia disponible. En regresión logística fue suficiente para pasar de 0.643 a 0.775. En LinearSVC, añadir después el filtrado de palabras vacías elevó el resultado a 0.791. Naive Bayes siguió otra trayectoria: la lematización fue su mejor paso individual y el conjunto de los seis pasos alcanzó 0.638. Por tanto, la normalización elegida para un modelo no se trasladó automáticamente a las otras familias.
+
+La inspección del texto permite interpretar estos cambios. El corrector recuperó \textit{recommend} a partir de \textit{reccomend}, pero la primera versión también sustituyó \textit{Skyrim} por \textit{skim} y \textit{cooldown} por \textit{comedown}. Incluso con una lista de términos protegidos persistió el cambio de \textit{bann} a \textit{bank}, aunque el contexto apuntaba a \textit{ban}. Reducir un alargamiento como el de \textit{good} puede recuperar una entrada del léxico; en otros casos, la reducción deja una forma intermedia como \textit{guud}. Ortografía y repeticiones juntas igualaron la línea base de tokenización en los tres modelos.
+
+\subsection*{Qué conserva cada representación}
+La matriz binaria registra si aparece un término; la de frecuencias conserva cuántas veces aparece. TF--IDF pondera además cada término según su distribución entre los documentos de entrenamiento. Los bigramas distinguen secuencias locales, pero exigen volver a observar pares específicos. En regresión logística, usar exclusivamente bigramas de frecuencia redujo el macro-F1 de 0.775 a 0.461; incluir unigramas y bigramas lo situó en 0.753. Con apenas 420 documentos de entrenamiento, el contexto adicional tuvo un coste observable en esta partición.
+
 \newpage
 \section{Qué aportaron los recursos lingüísticos}
 Las listas de Hu y Liu cuentan palabras positivas y negativas. El recurso compacto de SentiWordNet 3.0 promedia las polaridades de los sentidos de cada palabra con pesos inversos a su número de sentido y omite expresiones de varias palabras. En ambos casos, la negación local intercambia las dos polaridades. Cada suma se transforma con $\log(1+x)$ para moderar el peso de reseñas largas. El catálogo de emojis del curso y las listas de emoticonos proporcionan otra pareja de rasgos. Su cobertura en entrenamiento fue de 3.8\%, frente a 88.6\% de Hu y Liu y 99.0\% de SentiWordNet. Reconocer una palabra tampoco garantiza interpretar su sentido en videojuegos.
@@ -62,6 +103,25 @@ En regresión logística, combinar Hu y Liu con SentiWordNet añadió 0.0363 al 
 La minoría representa 91 de las 600 reseñas. Se diagnosticó antes de dividir los datos. Durante los ensayos, el remuestreo se aplicó únicamente al ajustar el clasificador con entrenamiento. En regresión logística, el macro-F1 de 0.7750 pasó a 0.7596 con ponderación, 0.7574 con sobremuestreo aleatorio, 0.5537 con submuestreo y 0.5570 con SMOTE. Este último interpola vectores vecinos: la combinación de coordenadas dispersas carece de garantía de corresponder a una frase real. El modelo final conservó la distribución observada.
 
 Una demostración independiente con entrenamiento y desarrollo ilustra el peligro de invertir el orden. Al sobremuestrear antes de dividir, 77 de 153 reseñas de evaluación se repitieron en entrenamiento y el macro-F1 aparente alcanzó 0.9673. Con partición previa hubo cero solapamientos. Los tamaños distintos impiden interpretar la diferencia como ganancia de un método.
+
+La interacción entre ponderación y representación fue importante en Naive Bayes. Ponderar las clases sobre los conteos redujo el macro-F1 de 0.6375 a 0.5997. Al combinar esa ponderación con TF--IDF de unigramas y bigramas, el ensayo C026 alcanzó 0.6684 y el F1 negativo llegó a 0.4878. Descartar toda ponderación después del primer contraste habría ocultado esta combinación.
+\newpage
+\section{Clasificadores y ajuste de hiperparámetros}
+Naive Bayes multinomial estima qué términos son más probables bajo cada clase. El suavizado $\alpha$ evita asignar probabilidad nula a un término ausente en una de ellas. La regresión logística combina los rasgos en una puntuación lineal y ajusta sus pesos mediante pérdida logística. LinearSVC aprende una frontera lineal mediante un criterio de margen. En ambos clasificadores lineales, disminuir $C$ impone una regularización más intensa. Una penalización excesiva puede impedir que el modelo aprenda señales poco frecuentes de la clase negativa.
+
+\begin{center}\small\begin{tabular}{rr|rrr}\toprule
+$\alpha$ (NB) & $C$ (lineales) & Naive Bayes & Reg. logística & LinearSVC\\\midrule
+0.01 & 0.01 & .663 & .535 & .600\\
+0.1 & 0.1 & .673 & .735 & .794\\
+0.5 & 1 & .746 & .811 & .811\\
+1 & 10 & .734 & .760 & .793\\
+2 & 100 & .722 & .745 & .793\\\bottomrule
+\end{tabular}\\{\small Macro-F1 en desarrollo con los rasgos seleccionados para cada familia.}
+\end{center}
+El mejor suavizado de Naive Bayes fue 0.5. Los dos modelos lineales alcanzaron su máximo con $C=1$. En esta búsqueda se fijó la representación antes de variar el hiperparámetro. Así, las diferencias de una misma columna miden el efecto del ajuste sobre un conjunto estable de rasgos.
+
+\subsection*{Cómo interpretar las métricas}
+Para una clase, la precisión es la fracción de sus predicciones que son correctas y el recall es la fracción de sus ejemplos reales que el modelo recupera. Su media armónica es $F_1=2PR/(P+R)$. El macro-F1 promedia los dos valores de $F_1$ con el mismo peso. Si se predijera siempre una recomendación positiva en desarrollo, se acertarían 77 de las 90 reseñas (85.6\%), con macro-F1 de apenas 0.461. Esta referencia explica por qué la exactitud se informa junto con el desempeño de cada clase.
 \newpage
 \section{Elección del modelo y resultados finales}
 En cada familia se conserva el primer ensayo que alcanza el máximo macro-F1 redondeado a cuatro decimales. Entre ganadores se compara primero macro-F1 y luego F1 negativo. C080 y C125 empataron también en F1 negativo (0.6667). La función \texttt{max} conservó la regresión logística por el orden de recorrido. La selección quedó registrada en \texttt{modelos/config\_final.json} antes del reajuste con 510 reseñas.
@@ -93,7 +153,10 @@ En prueba, el clasificador recuperó 6 de 14 negativas y 74 de 76 positivas. Si 
 \end{center}
 Las filas indican etiquetas observadas y las columnas, predicciones. En desarrollo, Naive Bayes detectó diez negativas, pero confundió once positivas con críticas. Regresión logística y LinearSVC tuvieron los mismos conteos agregados; sus errores individuales difieren. Por ejemplo, solo LinearSVC interpretó como negativa la broma sobre perder la salud mental (238009547).
 
-Las dos ramas léxicas también introdujeron errores respecto de la referencia logística. En 237056135 los elogios a la música y a las unidades coexistían con un voto negativo por el diseño del juego. En 238137688 ocurrió lo inverso: el usuario recomendó Dota pese a criticar su comunidad. Sumar polaridades locales pierde qué aspecto pesa más en la decisión final.
+Al comparar la configuración final con las referencias logísticas se identificaron errores nuevos. En 237056135 los elogios a la música y a las unidades coexistían con un voto negativo por el diseño del juego. En 238137688 ocurrió lo inverso: el usuario recomendó Dota pese a criticar su comunidad. Sumar polaridades locales pierde qué aspecto pesa más en la decisión final.
+
+\subsection*{Qué predicciones cambiaron}
+Frente al modelo logístico de tokenización sola (C038), C080 corrigió cinco errores de desarrollo: cuatro reseñas negativas y una positiva. Introdujo una falsa alarma al clasificar como negativa la reseña 238137688. Para aislar el efecto de los léxicos se comparó además C080 con C040, que ya expandía contracciones. En ese contraste los léxicos recuperaron dos negativas (238132143 y 237524577) e hicieron que se perdiera una previamente correcta (237056135). El beneficio neto fue una crítica adicional recuperada. Esta distinción evita atribuir a los léxicos los aciertos que ya explicaba la normalización.
 \newpage
 \subsection*{Lectura de casos individuales}
 La siguiente selección de desarrollo complementa los dos casos anteriores. La columna central identifica la etiqueta de Steam y la predicción errónea de al menos una familia.
@@ -125,7 +188,9 @@ Para reproducir desarrollo, se requiere el corpus congelado \texttt{opinions\_ra
 
 El entorno registrado empleó Python 3.13.18, scikit-learn 1.9.1, imbalanced-learn 0.14.2, pyspellchecker 0.9.1, NLTK 3.10.4, pandas 3.0.5 y NumPy 2.5.3. La semilla fue 0. La bitácora \texttt{experiments.tsv} vincula cada decisión con su ID. En \texttt{codigo\_etapa2/resultados/} se entregan además los documentos etiquetados, predicciones, métricas por clase, revisión manual y pares de texto original y transformado.
 
-\textbf{Alcance.} Las particiones contienen reseñas del mismo grupo de juegos. El desempeño en otros títulos, idiomas o periodos queda abierto. La baja cobertura de emojis, la ironía y la diferencia entre criticar un aspecto y desaconsejar la compra limitan el valor de una predicción individual.
+\subsection*{Limitaciones y conclusiones} Las particiones contienen reseñas del mismo grupo de juegos. El desempeño en otros títulos, idiomas o periodos queda abierto. La baja cobertura de emojis, la ironía y la diferencia entre criticar un aspecto y desaconsejar la compra limitan el valor de una predicción individual.
+
+En una aplicación de búsqueda, estas diferencias afectan directamente lo que ve el usuario. De las catorce críticas de prueba, ocho habrían quedado fuera al activar un filtro de sentimiento negativo. El modelo resulta más adecuado para localizar ejemplos de descontento que para estimar exhaustivamente cuántas críticas recibió un título. Una evaluación futura por videojuego permitiría determinar si el vocabulario aprendido se conserva al pasar a una comunidad distinta.
 
 \href{https://github.com/UlisesACC/proyecto-PLN/tree/5892c241c1bb37cb0870d7d21bf578d4c98a78a5/codigo_etapa2}{Código, recursos del curso y resultados utilizados en este informe.}
 \end{document}
