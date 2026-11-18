@@ -1,5 +1,5 @@
 # Recuperación de opiniones y clasificación de sentimiento en Steam
-
+Nota: El documento se encuentra en este github llamado **proyecto_PLN (1)**
 La etapa I devuelve reseñas relevantes para una consulta. La etapa II predice si el autor recomienda el juego a partir del texto de cada reseña recuperada. El identificador `review_id` permite seguir el mismo documento desde el corpus original hasta su predicción. El informe está disponible en [PDF](main.pdf) y en [LaTeX](main.tex).
 
 ## Etapa I · De la reseña al resultado de búsqueda
